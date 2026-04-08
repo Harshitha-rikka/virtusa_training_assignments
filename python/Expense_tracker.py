@@ -1,6 +1,8 @@
 import csv
+import matplotlib.pyplot as plt
 
 file_name = "expenses.csv"
+
 
 def add_expense():
     date = input("Enter date (YYYY-MM-DD): ")
@@ -67,6 +69,15 @@ def monthly_summary():
         if len(categories) > 0:
             highest = max(categories, key=categories.get)
             print("\nHighest Spending:", highest)
+
+            # pie chart
+            labels = list(categories.keys())
+            values = list(categories.values())
+
+            plt.figure()
+            plt.pie(values, labels=labels, autopct='%1.1f%%')
+            plt.title("Expense Distribution")
+            plt.show()
 
     except:
         print("No data available")
