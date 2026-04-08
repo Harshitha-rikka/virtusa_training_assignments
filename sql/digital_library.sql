@@ -36,7 +36,9 @@ INSERT INTO Students VALUES
 (102,'Anu'),
 (103,'Kiran'),
 (104,'Meena'),
-(105,'Arjun');
+(105,'Arjun'),
+(106,'Rahul'),
+(107,'Sneha');
 
 -- insert issued records
 
@@ -47,39 +49,39 @@ INSERT INTO IssuedBooks VALUES
 (4,4,104,'2026-04-02','2026-04-06'),
 (5,5,101,'2026-03-15',NULL),
 (6,6,105,'2026-04-01','2026-04-03'),
-(7,2,101,'2026-03-20',NULL);
+(7,2,101,'2026-03-20',NULL),
+(8,3,102,'2020-01-01','2020-01-10');
 
---------------------------------------------------
+
 -- Overdue penalty report (after 14 days)
---------------------------------------------------
+
 
 SELECT 
 s.name,
 b.title,
 i.issue_date,
-DATE('now') AS today,
-(DATE('now') - DATE(i.issue_date)) AS days_overdue,
-((DATE('now') - DATE(i.issue_date)) * 5) AS penalty
+DATEDIFF(CURDATE(), i.issue_date) AS days_overdue,
+DATEDIFF(CURDATE(), i.issue_date) * 5 AS penalty
 FROM Students s, Books b, IssuedBooks i
 WHERE s.student_id = i.student_id
 AND b.book_id = i.book_id
 AND i.return_date IS NULL
-AND i.issue_date < DATE('now','-14 days');
+AND i.issue_date < DATE_SUB(CURDATE(), INTERVAL 14 DAY);
 
---------------------------------------------------
+
 -- Popular category report
---------------------------------------------------
+
 
 SELECT 
 b.category,
 COUNT(*) AS total_borrowed
 FROM Books b, IssuedBooks i
 WHERE b.book_id = i.book_id
-GROUP BY b.category DESC;
+GROUP BY b.category DESC limit 1;
 
---------------------------------------------------
+
 -- Inactive students
---------------------------------------------------
+
 
 SELECT name
 FROM Students
@@ -88,14 +90,14 @@ WHERE student_id NOT IN
 SELECT student_id FROM IssuedBooks
 );
 
---------------------------------------------------
+
 -- Cleanup inactive (3 years)
---------------------------------------------------
+
 
 DELETE FROM Students
 WHERE student_id NOT IN
 (
 SELECT student_id
 FROM IssuedBooks
-WHERE issue_date >= DATE('now','-3 years')
+WHERE issue_date >= DATE_SUB(CURDATE(), INTERVAL 3 YEAR)
 );
