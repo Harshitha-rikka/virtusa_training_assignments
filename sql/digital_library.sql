@@ -77,7 +77,8 @@ b.category,
 COUNT(*) AS total_borrowed
 FROM Books b, IssuedBooks i
 WHERE b.book_id = i.book_id
-GROUP BY b.category DESC limit 1;
+GROUP BY b.category 
+ORDER BY total_borrowed DESC limit 1;
 
 
 -- Inactive students
